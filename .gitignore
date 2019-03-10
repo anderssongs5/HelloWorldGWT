@@ -20,7 +20,6 @@ war/WEB-INF/classes/
 
 #caching for already compiled files
 gwt-unitCache/
-war/helloworldgwt/
 
 #gwt junit compilation files
 www-test/
