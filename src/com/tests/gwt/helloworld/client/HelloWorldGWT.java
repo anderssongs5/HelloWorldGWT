@@ -3,11 +3,18 @@ package com.tests.gwt.helloworld.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -262,23 +269,23 @@ public class HelloWorldGWT implements EntryPoint {
         verticalPanel11.setSpacing(10);
         verticalPanel11.add(passwordTextBox1);
         verticalPanel11.add(passwordTextBox2);
-        
-      //create textarea elements
-        TextArea textArea1 = new TextArea(); 
+
+        // create textarea elements
+        TextArea textArea1 = new TextArea();
         TextArea textArea2 = new TextArea();
 
-        //set width as 10 characters
+        // set width as 10 characters
         textArea1.setCharacterWidth(20);
         textArea2.setCharacterWidth(20);
-       
-        //set height as 5 lines
+
+        // set height as 5 lines
         textArea1.setVisibleLines(5);
         textArea2.setVisibleLines(5);
-        
-        //add text to text area
+
+        // add text to text area
         textArea2.setText(" Hello World! \n Be Happy! \n Stay Cool!");
 
-        //set textbox as readonly
+        // set textbox as readonly
         textArea2.setReadOnly(true);
 
         // Add text boxes to the root panel.
@@ -286,6 +293,32 @@ public class HelloWorldGWT implements EntryPoint {
         verticalPanel12.setSpacing(10);
         verticalPanel12.add(textArea1);
         verticalPanel12.add(textArea2);
+
+        /*
+         * create textbox and attach key down handler
+         */
+        TextBox textBox = new TextBox();
+        textBox.addKeyDownHandler(new MyKeyDownHandler());
+
+        /*
+         * create button and attach click handler
+         */
+        Button button = new Button("Click Me!");
+        button.addClickHandler(new MyClickHandler());
+
+        VerticalPanel verticalPanel13 = new VerticalPanel();
+        verticalPanel13.setSpacing(10);
+        verticalPanel13.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        verticalPanel13.setSize("300", "100");
+        verticalPanel13.add(textBox);
+        verticalPanel13.add(button);
+
+        DecoratorPanel decoratorPanel1 = new DecoratorPanel();
+        decoratorPanel1.add(verticalPanel13);
+
+        // Create an optional text box and add it to the root panel.
+        OptionalTextBox otb = new OptionalTextBox("Want to explain the solution?");
+        otb.setEnabled(true);
 
         RootPanel.get("gwtGreenButton").add(Btn1);
         RootPanel.get("gwtRedButton").add(Btn2);
@@ -301,5 +334,98 @@ public class HelloWorldGWT implements EntryPoint {
         RootPanel.get("gwtContainerTextBox").add(verticalPanel10);
         RootPanel.get("gwtContainerPasswordTextBox").add(verticalPanel11);
         RootPanel.get("gwtContainerTextArea").add(verticalPanel12);
+        RootPanel.get("gwtContainerEventHandling").add(decoratorPanel1);
+        RootPanel.get("gwtContainerCustomWidget").add(otb);
+    }
+
+    /**
+     * create a custom click handler which will call onClick method when button is
+     * clicked.
+     */
+    private class MyClickHandler implements ClickHandler {
+        @Override
+        public void onClick(ClickEvent event) {
+            Window.alert("Hello World!");
+        }
+    }
+
+    /**
+     * create a custom key down handler which will call onKeyDown method when a key
+     * is down in textbox.
+     */
+    private class MyKeyDownHandler implements KeyDownHandler {
+        @Override
+        public void onKeyDown(KeyDownEvent event) {
+            if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+                Window.alert(((TextBox) event.getSource()).getValue());
+            }
+        }
+    }
+
+    private static class OptionalTextBox extends Composite implements ClickHandler {
+
+        private TextBox textBox = new TextBox();
+        private CheckBox checkBox = new CheckBox();
+        private boolean enabled = true;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        /**
+         * Style this widget using .optionalTextWidget CSS class.<br/>
+         * Style textbox using .optionalTextBox CSS class.<br/>
+         * Style checkbox using .optionalCheckBox CSS class.<br/>
+         * Constructs an OptionalTextBox with the given caption on the check.
+         * 
+         * @param caption
+         *            the caption to be displayed with the check box
+         */
+        public OptionalTextBox(String caption) {
+            // place the check above the text box using a vertical panel.
+            HorizontalPanel panel = new HorizontalPanel();
+            // panel.setBorderWidth(1);
+            panel.setSpacing(10);
+            panel.add(checkBox);
+            panel.add(textBox);
+
+            // all composites must call initWidget() in their constructors.
+            initWidget(panel);
+
+            // set style name for entire widget
+            //setStyleName("optionalTextWidget");
+
+            // set style name for text box
+            //textBox.setStyleName("optionalTextBox");
+
+            // set style name for check box
+            //checkBox.setStyleName("optionalCheckBox");
+            textBox.setWidth("200");
+
+            // Set the check box's caption, and check it by default.
+            checkBox.setText(caption);
+            checkBox.setValue(enabled);
+            checkBox.addClickHandler(this);
+            enableTextBox(enabled, checkBox.getValue());
+        }
+
+        public void onClick(ClickEvent event) {
+            if (event.getSource() == checkBox) {
+                // When the check box is clicked,
+                // update the text box's enabled state.
+                enableTextBox(enabled, checkBox.getValue());
+            }
+        }
+
+        private void enableTextBox(boolean enable, boolean isChecked) {
+            enable = (enable && isChecked) || (!enable && !isChecked);
+            System.out.println("Enable: " + enable);
+            textBox.setStyleDependentName("disabled", !enable);
+            textBox.setEnabled(enable);
+        }
     }
 }
