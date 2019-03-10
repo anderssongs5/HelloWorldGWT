@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -261,6 +262,30 @@ public class HelloWorldGWT implements EntryPoint {
         verticalPanel11.setSpacing(10);
         verticalPanel11.add(passwordTextBox1);
         verticalPanel11.add(passwordTextBox2);
+        
+      //create textarea elements
+        TextArea textArea1 = new TextArea(); 
+        TextArea textArea2 = new TextArea();
+
+        //set width as 10 characters
+        textArea1.setCharacterWidth(20);
+        textArea2.setCharacterWidth(20);
+       
+        //set height as 5 lines
+        textArea1.setVisibleLines(5);
+        textArea2.setVisibleLines(5);
+        
+        //add text to text area
+        textArea2.setText(" Hello World! \n Be Happy! \n Stay Cool!");
+
+        //set textbox as readonly
+        textArea2.setReadOnly(true);
+
+        // Add text boxes to the root panel.
+        VerticalPanel verticalPanel12 = new VerticalPanel();
+        verticalPanel12.setSpacing(10);
+        verticalPanel12.add(textArea1);
+        verticalPanel12.add(textArea2);
 
         RootPanel.get("gwtGreenButton").add(Btn1);
         RootPanel.get("gwtRedButton").add(Btn2);
@@ -275,5 +300,6 @@ public class HelloWorldGWT implements EntryPoint {
         RootPanel.get("gwtContainerSuggestBox").add(verticalPanel9);
         RootPanel.get("gwtContainerTextBox").add(verticalPanel10);
         RootPanel.get("gwtContainerPasswordTextBox").add(verticalPanel11);
+        RootPanel.get("gwtContainerTextArea").add(verticalPanel12);
     }
 }
